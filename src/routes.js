@@ -18,5 +18,6 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 routes.post('/avatars', upload.single('file'), AvatarController.store);
+routes.delete('/avatars/:id', AvatarController.delete);
 
 export default routes;
