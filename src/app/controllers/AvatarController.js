@@ -13,6 +13,14 @@ class AvatarController {
     return res.json(avatar);
   }
 
+  async update(req, res) {
+    const user = await User.findByPk(req.userId);
+
+    const userUpdated = await user.update(req.body);
+
+    return res.json(userUpdated);
+  }
+
   async delete(req, res) {
     const { id } = req.params;
 
