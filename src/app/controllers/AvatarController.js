@@ -5,12 +5,12 @@ class AvatarController {
   async store(req, res) {
     const { originalname: name, filename: path } = req.file;
 
-    const avatar = await Avatar.create({
+    const { id, url } = await Avatar.create({
       name,
       path,
     });
 
-    return res.json(avatar);
+    return res.json({ id, url });
   }
 
   async update(req, res) {
