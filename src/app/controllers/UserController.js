@@ -34,6 +34,39 @@ class UserController {
       email,
     });
   }
+
+  async update(req, res) {
+    const { name, oldEmail, newEmail, oldPassword, confirmPassword } = req.body;
+
+    const user = await User.findByPk(req.userId);
+
+    // Check if old email is right
+    if (oldEmail && user.email !== oldEmail) {
+      return res.status(404).json({ error: 'Old e-mail does not match' });
+    }
+
+    if (newEmail) {
+      const checkEmail = await User.findOne({ where: { email: newEmail } });
+
+      // Check if new email not exist
+      if (checkEmail) {
+        return res.status(404).json({ error: 'User already exists' });
+      }
+    }
+
+    // Check if old password is right
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      return res.status(404).json({ error: 'Old password does not match' });
+    }
+
+    await user.update({
+      name: name || user.name,
+      email: newEmail || user.email,
+      password: confirmPassword || user.password,
+    });
+
+    return res.json({ ok: true });
+  }
 }
 
 export default new UserController();
