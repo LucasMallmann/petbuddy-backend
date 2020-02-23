@@ -19,6 +19,6 @@ export default async (req, res, next) => {
 
     return next();
   } catch (err) {
-    return res.status(401).json({ error: 'Token does not match' });
+    return res.status(401).json({ error: 'Token invalid' });
   }
 };

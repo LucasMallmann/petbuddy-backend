@@ -10,7 +10,7 @@ import multerConfig from './config/multer';
 const routes = Router();
 const upload = multer(multerConfig);
 
-routes.get('/sessions', SessionController.store);
+routes.post('/sessions', SessionController.store);
 
 routes.post('/users', UserController.store);
 

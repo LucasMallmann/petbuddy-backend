@@ -16,9 +16,9 @@ class AvatarController {
   async update(req, res) {
     const user = await User.findByPk(req.userId);
 
-    const userUpdated = await user.update(req.body);
+    const { id, name, email, avatar_id } = await user.update(req.body);
 
-    return res.json(userUpdated);
+    return res.json({ id, name, email, avatar_id });
   }
 
   async delete(req, res) {
