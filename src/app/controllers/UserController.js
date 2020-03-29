@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 
+import Queue from '../../lib/Queue';
+import WelcomeMail from '../jobs/WelcomeMail';
 import User from '../models/User';
 
 class UserController {
@@ -18,7 +20,7 @@ class UserController {
       return res.status(400).json({ error: 'Validation fails' });
     }
 
-    const { email } = req.body;
+    const { name, email } = req.body;
 
     const user = await User.findOne({ where: { email } });
 
@@ -26,7 +28,12 @@ class UserController {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    const { id, name } = await User.create(req.body);
+    const { id } = await User.create(req.body);
+
+    Queue.add(WelcomeMail.key, {
+      name,
+      email,
+    });
 
     return res.json({
       id,
