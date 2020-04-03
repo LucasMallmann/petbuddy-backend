@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 
 import AvatarController from './app/controllers/AvatarController';
+import ForgotPasswordController from './app/controllers/ForgotPasswordController';
 import SessionController from './app/controllers/SessionController';
 import UserController from './app/controllers/UserController';
 import authMiddleware from './app/middlewares/auth';
@@ -13,6 +14,8 @@ const upload = multer(multerConfig);
 routes.post('/sessions', SessionController.store);
 
 routes.post('/users', UserController.store);
+
+routes.post('/forgot-password', ForgotPasswordController.store);
 
 routes.use(authMiddleware);
 
