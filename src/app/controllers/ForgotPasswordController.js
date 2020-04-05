@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-// import * as Yup from 'yup';
+import { subDays, isAfter } from 'date-fns';
+import * as Yup from 'yup';
 
 import Queue from '../../lib/Queue';
 import ForgotPassword from '../jobs/ForgotPassword';
@@ -23,7 +24,7 @@ class ForgotPasswordController {
     await user.save();
 
     Queue.add(ForgotPassword.key, {
-      name: user.name,
+      user: user.name,
       email,
       token,
     });
@@ -31,33 +32,42 @@ class ForgotPasswordController {
     return res.json();
   }
 
-  // async update(req, res) {
-  //   const schema = Yup.object().shape({
-  //     newPassword: Yup.string()
-  //       .min(6)
-  //       .required(),
-  //     confirmPassword: Yup.string().when('newPassword', (newPassword, field) =>
-  //       newPassword ? field.required().oneOf([Yup.ref('newPassword')]) : field
-  //     ),
-  //   });
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      password: Yup.string()
+        .min(6)
+        .required(),
+      confirmPassword: Yup.string().when('password', (password, field) =>
+        password ? field.required().oneOf([Yup.ref('password')]) : field
+      ),
+    });
 
-  //   if (!(await schema.isValid(req.body))) {
-  //     return res.status(400).json({ error: 'Validation fails' });
-  //   }
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
 
-  //   const { email, token } = req.query;
-  //   const { newPassword, confirmPassword } = req.body;
+    const { token, password } = req.body;
 
-  //   if (!email || !token) {
-  //     return res.status(404).json({ error: true });
-  //   }
+    const user = await User.findOne({ where: { token } });
 
-  //   const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-  //   if (!user) {
-  //     return res.status(404).json({ error: 'User not found' });
-  //   }
-  // }
+    const subDate = subDays(new Date(), 2);
+
+    if (isAfter(subDate, user.token_created_at)) {
+      return res.status(401).json({ error: 'Token invalid' });
+    }
+
+    user.token = null;
+    user.token_created_at = null;
+    user.password = password;
+
+    await user.save();
+
+    return res.json();
+  }
 }
 
 export default new ForgotPasswordController();

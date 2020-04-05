@@ -7,14 +7,14 @@ class ForgotPassword {
   }
 
   async handle({ data }) {
-    const { name, email, token } = data;
+    const { user, email, token } = data;
 
     await Mail.sendMail({
-      to: `${name} <${email}>`,
-      subject: 'Solicitação para troca de senha',
+      to: `${user} <${email}>`,
+      subject: 'Solicitação para recuperação de senha',
       template: 'forgotPassword',
       context: {
-        user: name,
+        user,
         email,
         token,
         url: process.env.URL_FORGOT_PASSWORD,

@@ -16,6 +16,7 @@ routes.post('/sessions', SessionController.store);
 routes.post('/users', UserController.store);
 
 routes.post('/forgot-password', ForgotPasswordController.store);
+routes.put('/forgot-password', ForgotPasswordController.update);
 
 routes.use(authMiddleware);
 
